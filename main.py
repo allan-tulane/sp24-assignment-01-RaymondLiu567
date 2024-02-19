@@ -5,12 +5,23 @@ See assignment-01.pdf for details.
 # no imports needed.
 
 def foo(x):
-    ### TODO
-    pass
+  if x <= 1:
+      return x
+  else:
+      ra = foo(x - 1)
+      rb = foo(x - 2)
+      return ra + rb
 
-def longest_run(mylist, key):
-    ### TODO
-    pass
+def longest_run(myarray, key):
+  longest = 0
+  current = 0
+  for number in myarray:
+    if number == key:
+        current += 1
+        longest = max(longest, current)
+    else:
+        current = 0
+  return longest
 
 
 class Result:
@@ -37,8 +48,35 @@ def to_value(v):
         return int(v)
         
 def longest_run_recursive(mylist, key):
-    ### TODO
-    pass
+  # Base case for empty list
+  if not mylist:
+      return Result(0, 0, 0, True)
+
+  # Base case for single element list
+  if len(mylist) == 1:
+      if mylist[0] == key:
+          return Result(1, 1, 1, True)
+      else:
+          return Result(0, 0, 0, False)
+
+  # Recursive case: divide the list
+  mid = len(mylist) // 2
+  left_half = longest_run_recursive(mylist[:mid], key)
+  right_half = longest_run_recursive(mylist[mid:], key)
+
+  # Combine solutions
+  if left_half.is_entire_range and right_half.is_entire_range and mylist[mid-1] == key:
+      return Result(left_half.left_size + right_half.right_size, 
+                    left_half.left_size + right_half.right_size, 
+                    left_half.left_size + right_half.right_size, 
+                    True)
+
+  longest_run_across = left_half.right_size + right_half.left_size if mylist[mid-1] == mylist[mid] == key else 0
+  longest_run = max(left_half.longest_size, right_half.longest_size, longest_run_across)
+  left_size = left_half.left_size if mylist[0] == key else 0
+  right_size = right_half.right_size if mylist[-1] == key else 0
+
+  return Result(left_size, right_size, longest_run, False)
 
 
 
